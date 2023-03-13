@@ -2,13 +2,17 @@ from navigation import Navigation
 from color_detection import ColorDetector
 from delivery import Delivery
 
+def waitUntil(callback):
+    while not callback():
+        pass
+
 if __name__ == "__main__":
     nav = Navigation()
     deliv = Delivery()
 
     """
     FIRST ITERATION:
-    1 - cube loading
+    1 - cube loading (wait until button pressed)
     2 - navigation sequence
     3 - when stop reached, check case:
         a - green stop:
@@ -18,7 +22,7 @@ if __name__ == "__main__":
     4 - go to step 2
 
     NEXT ITERATIONS:
-    1 - cube loading
+    1 - cube loading (wait until button pressed)
     2 - navigation sequence
     3 - when stop reached, check case:
         a - green stop: 
