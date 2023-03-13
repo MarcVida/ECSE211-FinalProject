@@ -58,9 +58,9 @@ class ColorDetector:
         distances = {}
         for colorName, colorRGB in self.COLORS.items():
             difference = [colorRGB[0] - normRBG[0], 
-                          colorRGB[0] - normRBG[1], 
+                          colorRGB[1] - normRBG[1], 
                           colorRGB[2] - normRBG[2]]
-            distance = sqrt(difference[0]**2 + difference[1]**2 + difference[2]**2)
+            distance = sqrt((difference[0]**2) + (difference[1]**2) + (difference[2]**2))
             if distance <= self.COLOR_TRESHOLD:
                 distances[colorName] = distance
 
