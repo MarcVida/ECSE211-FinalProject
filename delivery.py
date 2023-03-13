@@ -27,7 +27,13 @@ class Delivery:
     def deliverySequence(self):
         # TODO: Implement this
         self.log("Dropping cube...")
-        waitUntil(self.isDeliveryComplete)
+        self.deliveryMotor.set_limits(50)
+        self.deliveryMotor.set_position_relative(80)
+        #waitUntil(self.isDeliveryComplete)
+        sleep(4)
+        self.deliveryMotor.set_position_relative(-80)
+        sleep(3)
+        self.deliveryMotor.set_power(0)
         self.log("Delivery complete.")
 
     def isDeliveryComplete(self):
