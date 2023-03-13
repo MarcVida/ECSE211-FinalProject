@@ -53,5 +53,6 @@ class Navigation:
 
 
 if __name__=='__main__':
-    navSequence()
-    #instantiate flute
+    navigate=Navigation("A","B")
+    navigate.navSequence()
+    exit()
