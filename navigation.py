@@ -1,21 +1,28 @@
 from utils.brick import EV3ColorSensor, wait_ready_sensors, Motor
 from time import sleep
-import color_detection 
+from color_detection import ColorDetector 
 
-""" Class for robot to navigate the map"""
 class Navigation:
-    colordetector:color_detection.ColorDetector=None
-    motorL: Motor=None
-    motorR:Motor = None
+    """Class for the navigation subsystem"""
 
-    def __init__(self, motorPortL, motorPortR, colorDetector)->None:
-        self.motorL=Motor(motorPortL)
-        self.motorR=Motor(motorPortR)
-        self.colordetector=colorDetector
+    colordetector: ColorDetector = None
+    motorL: Motor = None
+    motorR: Motor = None
 
+    def __init__(self, motorPortL: int, motorPortR: int, colorDetector: ColorDetector) -> None:
+        """Constructor for the Navigation class.
+
+        Args:
+            motorPortL (int): The port for the left motor.
+            motorPortR (int): The port for the right motor.
+            colorDetector (ColorDetector): The ColorDetector object.
+        """
+        self.motorL = Motor(motorPortL)
+        self.motorR = Motor(motorPortR)
+        self.colordetector = colorDetector
 
     def navSequence(self):
-        navSensor=EV3ColorSensor(None)
+        navSensor = EV3ColorSensor(None)
 
         while(True):
             color=self.colordetector.getNavSensorColor()
@@ -52,7 +59,7 @@ class Navigation:
         pass
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     navigate=Navigation("A","B")
     navigate.navSequence()
     exit()

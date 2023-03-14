@@ -6,17 +6,26 @@ def waitUntil(callback):
         pass
 
 class Delivery:
+    """Class for the delivery subsystem."""
 
-    deliveryMotor: Motor
-    loadingTS: TouchSensor
+    deliveryMotor: Motor = None
+    loadingTS: TouchSensor = None
 
-    def __init__(self, deliveryPort: int, loadingPort: int, debug: bool) -> None:
-            self.deliveryMotor = Motor(deliveryPort)
-            self.loadingTS = TouchSensor(loadingPort)
-            self.debug = debug
+    def __init__(self, deliveryPort: int, loadingPort: int, debug: bool = False) -> None:
+        """Constructor for the Delivery class.
+
+        Args:
+            deliveryPort (int): The port for the delivery motor.
+            loadingPort (int): The port for the loading touch sensor.
+            debug (bool, optional): Sets whether the object is in debug mode. Defaults to False.
+        """
+        self.deliveryMotor = Motor(deliveryPort)
+        self.loadingTS = TouchSensor(loadingPort)
+        self.debug = debug
 
     def loadingSequence(self):
-        # TODO: Implement this
+        """Starts the loading sequence: Wait for the user to load the cubes.
+        """
         self.log("Loading...")
         waitUntil(self.isLoadingComplete)
         self.log("Loading complete.")
@@ -25,7 +34,8 @@ class Delivery:
         return self.loadingTS.is_pressed()
 
     def deliverySequence(self):
-        # TODO: Implement this
+        """Starts the delivery sequence: Drop a cube.
+        """
         self.log("Dropping cube...")
         self.deliveryMotor.set_limits(50)
         self.deliveryMotor.set_position_relative(80)
@@ -41,9 +51,14 @@ class Delivery:
         return True
 
     def log(self, message: str):
+        """Prints a message is debug is set to True.
+
+        Args:
+            message (str): The message to be printed
+        """
         if self.debug: print(message)
     
 if __name__ == "__main__":
-    delivery = Delivery(0,0,True)
+    delivery = Delivery(1,2,True)
     delivery.loadingSequence()
     delivery.deliverySequence()
