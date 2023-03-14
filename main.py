@@ -14,8 +14,8 @@ if __name__ == "__main__":
         a - green stop:
             1. save delivery zone color & position to system
             2. if correct color, drop cube
+            3. go to step 2
         b - yellow stop: rotate 180 degrees, then go to step 1
-    4 - go to step 2
 
     NEXT ITERATIONS:
     1 - cube loading (wait until button pressed)
@@ -26,6 +26,6 @@ if __name__ == "__main__":
             2. if correct position:
                 a. drop cube
                 b. set direction towards next position
+            3. go to step 2
         b - yellow stop: rotate 180 degrees, then go to step 1
-    4 - go to step 2
     """
