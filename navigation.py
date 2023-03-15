@@ -30,13 +30,10 @@ class Navigation:
             if color=="BLUE":
                 self.motorL.set_power(30)
                 self.motorR.set_power(0)
-                sleep(0.1)
 
             elif color=="RED":
                 self.motorL.set_power(0)
                 self.motorR.set_power(30)
-                sleep(0.1)
-                pass
             
             elif color=="GREEN":
 
@@ -49,7 +46,7 @@ class Navigation:
             else:
                 self.motorL.set_power(30)
                 self.motorR.set_power(30)
-                sleep(0.1)
+            sleep(0.1)
 
     def deliverySequence(self):
         pass
