@@ -1,4 +1,5 @@
 from utils.brick import Motor, TouchSensor, reset_brick
+from utils.sound import Sound
 from time import sleep
 
 def waitUntil(callback):
@@ -10,6 +11,8 @@ class Delivery:
 
     deliveryMotor: Motor = None
     loadingTS: TouchSensor = None
+    SOUND1: Sound = None
+    SOUND2: Sound = None
 
     def __init__(self, deliveryPort: int, loadingPort: int, debug: bool = False) -> None:
         """Constructor for the Delivery class.
@@ -21,14 +24,19 @@ class Delivery:
         """
         self.deliveryMotor = Motor(deliveryPort)
         self.loadingTS = TouchSensor(loadingPort)
+        SOUND1 = Sound(duration=0.5, pitch="G5", volume=80)
+        SOUND2 = Sound(duration=0.5, pitch="C6", volume=80)
         self.debug = debug
 
     def loadingSequence(self):
         """Starts the loading sequence: Wait for the user to load the cubes.
         """
+        self.SOUND1.play()
         self.log("Loading...")
         waitUntil(self.isLoadingComplete)
+        self.SOUND2.play()
         self.log("Loading complete.")
+        
 
     def isLoadingComplete(self):
         return self.loadingTS.is_pressed()
@@ -45,10 +53,6 @@ class Delivery:
         sleep(1)
         self.deliveryMotor.set_power(0)
         self.log("Delivery complete.")
-
-    def isDeliveryComplete(self):
-        # TODO: Implement this
-        return True
 
     def log(self, message: str):
         """Prints a message is debug is set to True.
