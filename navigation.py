@@ -8,8 +8,11 @@ class Navigation:
     colordetector: ColorDetector = None
     motorL: Motor = None
     motorR: Motor = None
+    isForward=True
+    greenCount=0
 
-    def __init__(self, motorPortL: int, motorPortR: int, colorDetector: ColorDetector) -> None:
+
+    def __init__(self, motorPortL: int, motorPortR: int, colorDetector: ColorDetector, debug: bool=False) -> None:
         """Constructor for the Navigation class.
 
         Args:
@@ -20,43 +23,61 @@ class Navigation:
         self.motorL = Motor(motorPortL)
         self.motorR = Motor(motorPortR)
         self.colordetector = colorDetector
+        self.debug=debug
 
     def navSequence(self):
         navSensor = EV3ColorSensor(None)
 
+        """
+        """
         while(True):
             color=self.colordetector.getNavSensorColor()
 
             if color=="BLUE":
-                self.motorL.set_power(30)
-                self.motorR.set_power(0)
+                if(self.isForward):
+                    self.turnLeft()
+                else:
+                    self.turnRight()
+
 
             elif color=="RED":
-                self.motorL.set_power(0)
-                self.motorR.set_power(30)
+                if(self.isForward):
+                    self.turnRight()
+                else:
+                    self.turnLeft()
             
             elif color=="GREEN":
-
                 # Call position tracker and set new position
+                self.positionTracker()
 
-                break
+                #break
             elif color=="YELLOW":
                 self.motorL.set_power(0)
                 self.motorL.set_power(0)
 
                 break
             else:
-                self.motorL.set_power(-30)
-                self.motorR.set_power(-30)
+                if(self.isForward):
+                    self.motorL.set_power(-30)
+                    self.motorR.set_power(-30)
+                else:
+                    self.motorL.set_power(30)
+                    self.motorR.set_power(30)
             sleep(0.1)
 
     def deliverySequence(self):
         pass
 
     def positionTracker(self):
-        forward=True;
-        greenCount=0
-        pass
+        """Keeps track of position relative to the green lines on the map
+        There are 6 total green lines
+        """
+        if(self.isForward):
+            self.greenCount+=1
+        else:
+            self.greenCount-=1
+        self.log("position is "+self.greenCount)
+
 
     def turnLeft(self):
         self.motorL.set_power(-30)
@@ -65,6 +86,14 @@ class Navigation:
     def turnRight(self):
         self.motorL.set_power(0)
         self.motorR.set_power(-30)
+    
+    def log(self, message: str):
+        """Prints a message is debug is set to True.
+
+        Args:
+            message (str): The message to be printed
+        """
+        if self.debug: print(message)
 
 
 if __name__ == '__main__':
