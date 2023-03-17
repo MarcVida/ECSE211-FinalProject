@@ -1,4 +1,4 @@
-from utils.brick import Motor, TouchSensor
+from utils.brick import Motor, TouchSensor, reset_brick
 from time import sleep
 
 def waitUntil(callback):
@@ -37,12 +37,12 @@ class Delivery:
         """Starts the delivery sequence: Drop a cube.
         """
         self.log("Dropping cube...")
-        self.deliveryMotor.set_limits(50)
-        self.deliveryMotor.set_position_relative(80)
-        #waitUntil(self.isDeliveryComplete)
-        sleep(4)
+        self.deliveryMotor.set_limits(40)
         self.deliveryMotor.set_position_relative(-80)
-        sleep(3)
+        #waitUntil(self.isDeliveryComplete)
+        sleep(1)
+        self.deliveryMotor.set_position_relative(-80)
+        sleep(1)
         self.deliveryMotor.set_power(0)
         self.log("Delivery complete.")
 
@@ -60,5 +60,10 @@ class Delivery:
     
 if __name__ == "__main__":
     delivery = Delivery(1,2,True)
-    delivery.loadingSequence()
-    delivery.deliverySequence()
+    while(True):
+        try:
+            delivery.loadingSequence()
+            delivery.deliverySequence()
+        except BaseException:
+            reset_brick()
+            exit()

@@ -1,4 +1,4 @@
-from utils.brick import EV3ColorSensor, wait_ready_sensors, Motor
+from utils.brick import EV3ColorSensor, wait_ready_sensors, Motor, reset_brick
 from time import sleep
 from color_detection import ColorDetector 
 
@@ -41,22 +41,36 @@ class Navigation:
 
                 break
             elif color=="YELLOW":
+                self.motorL.set_power(0)
+                self.motorL.set_power(0)
 
                 break
             else:
-                self.motorL.set_power(30)
-                self.motorR.set_power(30)
+                self.motorL.set_power(-30)
+                self.motorR.set_power(-30)
             sleep(0.1)
 
     def deliverySequence(self):
         pass
 
     def positionTracker(self):
+        forward=True;
         greenCount=0
         pass
+
+    def turnLeft(self):
+        self.motorL.set_power(-30)
+        self.motorR.set_power(0)
+
+    def turnRight(self):
+        self.motorL.set_power(0)
+        self.motorR.set_power(-30)
 
 
 if __name__ == '__main__':
     navigate=Navigation("A","B")
-    navigate.navSequence()
-    exit()
+    try:
+        navigate.navSequence()
+    except BaseException:
+        reset_brick()
+        exit()
