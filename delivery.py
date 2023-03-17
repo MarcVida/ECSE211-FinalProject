@@ -38,7 +38,7 @@ class Delivery:
         """
         self.log("Dropping cube...")
         self.deliveryMotor.set_limits(40)
-        self.deliveryMotor.set_position_relative(-80)
+        self.deliveryMotor.set_position_relative(-90)
         #waitUntil(self.isDeliveryComplete)
         sleep(1)
         self.deliveryMotor.set_position_relative(-80)
