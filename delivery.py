@@ -24,8 +24,8 @@ class Delivery:
         """
         self.deliveryMotor = Motor(deliveryPort)
         self.loadingTS = TouchSensor(loadingPort)
-        SOUND1 = Sound(duration=0.5, pitch="G5", volume=80)
-        SOUND2 = Sound(duration=0.5, pitch="C6", volume=80)
+        self.SOUND1 = Sound(duration=0.5, pitch="G5", volume=80)
+        self.SOUND2 = Sound(duration=0.5, pitch="C6", volume=80)
         self.debug = debug
 
     def loadingSequence(self):
