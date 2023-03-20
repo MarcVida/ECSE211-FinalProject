@@ -4,14 +4,23 @@ from delivery import Delivery
 from utils.brick import reset_brick
 
 if __name__ == "__main__":
-    colorDet = ColorDetector(1)
-    navigate=Navigation("A","B", colorDet, debug=True)
+    navigate = Navigation("A","B", 1, debug=True)
     try:
         while True:
-            navigate.navSequence()
-    except BaseException:
+            flag = navigate.navSequence()
+            if flag == "DELIVERY":
+                # TODO: do delivery
+                print("DELIVERY")
+                navigate.goTowardsPath()
+                navigate.turnTowardsNextLocation()
+            elif flag == "LOADING":
+                # TODO: do loading
+                print("LOADING")
+                pass
+    except BaseException as e:
         reset_brick()
-        exit()
+        raise e
+        #exit()
 
     """while(True):
         deliv.loadingSequence()

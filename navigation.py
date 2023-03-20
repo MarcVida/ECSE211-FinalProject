@@ -1,5 +1,5 @@
 from utils.brick import EV3ColorSensor, wait_ready_sensors, Motor, reset_brick
-from time import sleep
+from time import sleep, time
 from color_detection import ColorDetector 
 
 class Navigation:
@@ -10,16 +10,16 @@ class Navigation:
     colordetector: ColorDetector = None
     motorL: Motor = None
     motorR: Motor = None
-    isForward=True
+    isForward = True
     LAST_LOCATION = 6
-    locations = [None for _ in range(0,LAST_LOCATION+1)]
-    colors = ["YELLOW","PURPLE","BLUE","GREEN", "YELLOW", "ORANGE","RED"]
-    currColor: str = None
-
+    colorsInMap = [None] * (LAST_LOCATION + 1)
+    colorsToDeliver = ["PURPLE","BLUE","GREEN", "YELLOW", "ORANGE"]
+    nextColor = "RED"
     currLocation = 0
+    timer = 0
 
 
-    def __init__(self, motorPortL: int, motorPortR: int, colorDetector: ColorDetector, debug: bool=False) -> None:
+    def __init__(self, motorPortL: int, motorPortR: int, colorDetectorPort: int, debug: bool=False) -> None:
         """Constructor for the Navigation class.
 
         Args:
@@ -29,71 +29,75 @@ class Navigation:
         """
         self.motorL = Motor(motorPortL)
         self.motorR = Motor(motorPortR)
-        self.colordetector = colorDetector
+        self.colordetector = ColorDetector(colorDetectorPort)
         self.debug=debug
 
-
     def navSequence(self):
+        self.resetTimer()
         while(True):
             color=self.colordetector.getNavSensorColor()
 
             if color=="BLUE":
+                self.log("BLUE")
                 if(self.isForward):
                     self.turnLeft()
                 else:
                     self.turnRight()
 
             elif color=="RED":
+                self.log("RED")
                 if(self.isForward):
                     self.turnRight()
                 else:
                     self.turnLeft()
 
-            elif color=="GREEN":
-                self.motorL.set_power(0)
-                self.motorR.set_power(0)
+            elif color=="GREEN" and time() > self.timer:
                 # Update location, return DELIVERY flag if correct location
                 # If DELIVERY flag is returned, the main module must call goTowardsPath() and turnTowardsNextLocation()
-                self.updatePosition()
-                if self.locations[self.currLocation] == None:
+                self.stop()
+                self.updateLocation()
+                self.log("GREEN")
+                self.log(f"current location: index={self.currLocation}, color={self.colorsInMap[self.currLocation]}")
+                if not self.colorsInMap[self.currLocation]:
                     self.goTowardsZone()
                     zoneColor = self.colordetector.getNavSensorColor()
-                    self.locations[self.currLocation] = zoneColor
-                    if zoneColor == self.currColor:
+                    self.colorsInMap[self.currLocation] = zoneColor
+                    self.log(f"detected color: {zoneColor}")
+                    self.log(f"colors in map update:", self.colorsInMap)
+                    if zoneColor == self.nextColor:
                         return "DELIVERY"
                     self.goTowardsPath()
-                elif self.locations[self.currLocation] == self.currColor:
+                elif self.colorsInMap[self.currLocation] == self.nextColor:
                     self.goTowardsZone()
                     return "DELIVERY"
-                self.turnTowardsNextLocation()
+                self.log("no delivery")
+                self.resetTimer()
 
-            elif color=="YELLOW":
+            elif color=="YELLOW" and time() > self.timer:
                 # Return LOADING flag
-                self.motorL.set_power(0)
-                self.motorL.set_power(0)
-                self.turnTowardsNextLocation()
-                colors = ["YELLOW","PURPLE","BLUE","GREEN", "YELLOW", "ORANGE","RED"]
+                self.stop()
+                self.updateLocation()
+                self.log(f"current location index: {self.currLocation}")
+                self.rotateForward()
+                self.isForward = True
+                self.colorsToDeliver = ["YELLOW","PURPLE","BLUE","GREEN", "YELLOW", "ORANGE"]
+                self.nextColor = "RED"
                 return "LOADING"
             
             else:
-                if(self.isForward):
-                    self.motorL.set_power(-25)
-                    self.motorR.set_power(-25)
-                else:
-                    self.motorL.set_power(25)
-                    self.motorR.set_power(25)
+                self.goForward()
 
             sleep(0.1)
 
-    def updatePosition(self):
-        """Keeps track of position relative to the green lines on the map
-        There are 6 total green lines
+    def updateLocation(self):
+        """Keeps track of position relative to the yellow/green lines on the map
+        There are 7 total yellow/green lines
         """
         if(self.isForward):
             self.currLocation+=1
         else:
             self.currLocation-=1
-        self.log("Location is "+self.currLocation)
+        self.log(f"Location is: {self.currLocation}")
 
 
     def turnLeft(self):
@@ -103,6 +107,14 @@ class Navigation:
     def turnRight(self):
         self.motorL.set_power(0)
         self.motorR.set_power(-30)
+
+    def goForward(self):
+        self.motorL.set_power(-25)
+        self.motorR.set_power(-25)
+
+    def stop(self):
+        self.motorL.set_power(0)
+        self.motorL.set_power(0)
     
     def goTowardsZone(self):
         """If it's going forward the delivery zone is to the right
@@ -136,22 +148,21 @@ class Navigation:
             self.motorL.set_power(0)
             
     def turnTowardsNextLocation(self):
-        if self.currColor == "YELLOW": return
-
-        self.currColor = self.colors.pop()
-        if self.currColor == "YELLOW":
+        if not self.colorsToDeliver:
+            self.log("cube delivery complete")
             self.rotateBackwards()
             return
 
+        self.nextColor = self.colorsToDeliver.pop()
+        self.log(f"next color: {self.nextColor}")
         curr = self.currLocation
-        if curr == 0:
-            self.rotateForward()
-        elif curr == self.LAST_LOCATION:
+
+        if curr == self.LAST_LOCATION:
             self.rotateBackwards()
-        elif self.currColor not in self.locations:
+        elif self.nextColor not in self.colorsInMap:
             self.rotateForward()
         else:
-            next = self.locations.index(self.currColor)
+            next = self.colorsInMap.index(self.nextColor)
             if next > curr:
                 self.rotateForward()
             else:
@@ -183,10 +194,12 @@ class Navigation:
         """
         if self.debug: print(message)
 
+    def resetTimer(self):
+        self.timer = time() + 1
+
 
 if __name__ == '__main__':
-    colorDet = ColorDetector(1)
-    navigate=Navigation("A","B", colorDet, debug=True)
+    navigate = Navigation("A","B", 1, debug=True)
     try:
         navigate.navSequence()
     except BaseException:
