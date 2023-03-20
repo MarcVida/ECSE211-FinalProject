@@ -32,10 +32,6 @@ class Navigation:
 
 
     def navSequence(self):
-        navSensor = EV3ColorSensor(None)
-
-        """
-        """
         while(True):
             color=self.colordetector.getNavSensorColor()
 
@@ -45,23 +41,35 @@ class Navigation:
                 else:
                     self.turnRight()
 
-
             elif color=="RED":
                 if(self.isForward):
                     self.turnRight()
                 else:
                     self.turnLeft()
-            
+
             elif color=="GREEN":
-                # Call position tracker and set new position
+                # Update location, return DELIVERY flag if correct location
+                # If DELIVERY flag is returned, the main module must call goTowardsPath() and turnTowardsNextLocation()
                 self.updatePosition()
+                if self.locations[self.currLocation] == None:
+                    self.goTowardsZone()
+                    zoneColor = self.colordetector.getNavSensorColor()
+                    self.locations[self.currLocation] = zoneColor
+                    if zoneColor == self.currColor:
+                        return "DELIVERY"
+                    self.goTowardsPath()
+                elif self.locations[self.currLocation] == self.currColor:
+                    self.goTowardsZone()
+                    return "DELIVERY"
+                self.turnTowardsNextLocation()
 
-                #break
             elif color=="YELLOW":
+                # Return LOADING flag
                 self.motorL.set_power(0)
                 self.motorL.set_power(0)
-
-                break
+                self.turnTowardsNextLocation()
+                return "LOADING"
+            
             else:
                 if(self.isForward):
                     self.motorL.set_power(-30)
@@ -69,6 +77,7 @@ class Navigation:
                 else:
                     self.motorL.set_power(30)
                     self.motorR.set_power(30)
+
             sleep(0.1)
 
     def updatePosition(self):
@@ -122,10 +131,33 @@ class Navigation:
             self.motorL.set_power(0)
             
     def turnTowardsNextLocation(self):
-        pass
+        if not self.colors:
+            if not self.isForward:
+                # 180 degrees turn
+                self.isForward = True
+            return
+        self.currColor = self.colors.pop()
+        curr = self.currLocation
+        if curr == 0 or curr == self.LAST_LOCATION:
+            # 180 degrees turn
+            return
+        if (self.currColor not in self.locations):
+            if not self.isForward:
+                # 180 degrees turn
+                self.isForward = True
+            return
+        next = self.locations.index(self.currColor)
+        # TODO: FINISH THIS
+
 
     def getNextColor(self):
+        
         pass
+
+    def turn180deg(self):
+        if not self.isForward:
+                # 180 degrees turn
+                self.isForward = True
 
     def log(self, message: str):
         """Prints a message is debug is set to True.
