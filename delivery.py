@@ -36,7 +36,6 @@ class Delivery:
         waitUntil(self.isLoadingComplete)
         self.SOUND2.play()
         self.log("Loading complete.")
-        
 
     def isLoadingComplete(self):
         return self.loadingTS.is_pressed()
@@ -47,7 +46,6 @@ class Delivery:
         self.log("Dropping cube...")
         self.deliveryMotor.set_limits(40)
         self.deliveryMotor.set_position_relative(-90)
-        #waitUntil(self.isDeliveryComplete)
         sleep(1)
         self.deliveryMotor.set_position_relative(-80)
         sleep(1)

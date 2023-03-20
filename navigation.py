@@ -9,7 +9,12 @@ class Navigation:
     motorL: Motor = None
     motorR: Motor = None
     isForward=True
-    greenCount=0
+    LAST_LOCATION = 6
+    locations = [None for _ in range(0,LAST_LOCATION+1)]
+    colorOrder = ["","","","","",""]
+    currColor: str = None
+
+    currLocation = 0
 
 
     def __init__(self, motorPortL: int, motorPortR: int, colorDetector: ColorDetector, debug: bool=False) -> None:
@@ -24,6 +29,7 @@ class Navigation:
         self.motorR = Motor(motorPortR)
         self.colordetector = colorDetector
         self.debug=debug
+
 
     def navSequence(self):
         navSensor = EV3ColorSensor(None)
@@ -48,7 +54,7 @@ class Navigation:
             
             elif color=="GREEN":
                 # Call position tracker and set new position
-                self.positionTracker()
+                self.updatePosition()
 
                 #break
             elif color=="YELLOW":
@@ -65,18 +71,15 @@ class Navigation:
                     self.motorR.set_power(30)
             sleep(0.1)
 
-    def deliverySequence(self):
-        pass
-
-    def positionTracker(self):
+    def updatePosition(self):
         """Keeps track of position relative to the green lines on the map
         There are 6 total green lines
         """
         if(self.isForward):
-            self.greenCount+=1
+            self.currLocation+=1
         else:
-            self.greenCount-=1
-        self.log("position is "+self.greenCount)
+            self.currLocation-=1
+        self.log("Location is "+self.currLocation)
 
 
     def turnLeft(self):
@@ -87,6 +90,18 @@ class Navigation:
         self.motorL.set_power(0)
         self.motorR.set_power(-30)
     
+    def goTowardsZone(self):
+        pass
+
+    def goTowardsPath(self):
+        pass
+
+    def turnTowardsNextLocation(self):
+        pass
+
+    def getNextColor(self):
+        pass
+
     def log(self, message: str):
         """Prints a message is debug is set to True.
 
