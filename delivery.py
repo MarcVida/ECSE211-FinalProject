@@ -36,6 +36,7 @@ class Delivery:
         waitUntil(self.isLoadingComplete)
         self.SOUND2.play()
         self.log("Loading complete.")
+        self.SOUND2.wait_done()
 
     def isLoadingComplete(self):
         return self.loadingTS.is_pressed()
@@ -61,7 +62,7 @@ class Delivery:
         if self.debug: print(message)
     
 if __name__ == "__main__":
-    delivery = Delivery(1,2,True)
+    delivery = Delivery(1, 2, debug=True)
     while(True):
         try:
             delivery.loadingSequence()

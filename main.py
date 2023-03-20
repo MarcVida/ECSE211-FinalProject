@@ -5,16 +5,19 @@ from utils.brick import reset_brick
 
 if __name__ == "__main__":
     navigate = Navigation("A","B", 1, debug=True)
+    #delivery = Delivery("D", 999, debug=True)
     try:
         while True:
             flag = navigate.navSequence()
             if flag == "DELIVERY":
                 # TODO: do delivery
+                #delivery.deliverySequence()
                 print("DELIVERY")
                 navigate.goTowardsPath()
                 navigate.turnTowardsNextLocation()
             elif flag == "LOADING":
                 # TODO: do loading
+                #delivery.loadingSequence()
                 print("LOADING")
                 pass
     except BaseException as e:

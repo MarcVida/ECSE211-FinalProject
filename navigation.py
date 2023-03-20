@@ -119,6 +119,7 @@ class Navigation:
     def goTowardsZone(self):
         """If it's going forward the delivery zone is to the right
         """
+        self.log("go towards zone")
         if(self.isForward):
             self.motorL.set_power(30)
             sleep(0.75)
@@ -133,6 +134,7 @@ class Navigation:
         """Move back a little so it doesn't hit the cube. 
         Turn back to the road
         """
+        self.log("go towards path")
         self.motorL.set_power(30)
         self.motorR.set_power(30)
         sleep(0.25)
@@ -149,7 +151,7 @@ class Navigation:
             
     def turnTowardsNextLocation(self):
         if not self.colorsToDeliver:
-            self.log("cube delivery complete")
+            self.log("all cubes have been delivered")
             self.rotateBackwards()
             return
 
@@ -170,6 +172,7 @@ class Navigation:
 
     def rotateForward(self):
         if not self.isForward:
+            self.log("rotating forward")
             self.motorL.set_power(-30)
             self.motorR.set_power(30)
             sleep(self.TURN_180_TIME)
@@ -179,6 +182,7 @@ class Navigation:
     
     def rotateBackwards(self):
         if self.isForward:
+            self.log("rotating backwards")
             self.motorL.set_power(-30)
             self.motorR.set_power(30)
             sleep(self.TURN_180_TIME)
