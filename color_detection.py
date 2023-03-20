@@ -25,7 +25,6 @@ class ColorDetector:
             deliveryPort (int): The port of the delivery color sensor
         """
         if (not self.navSensor): self.navSensor = EV3ColorSensor(navigationPort)
-        if (not self.delSensor): self.delSensor = EV3ColorSensor(deliveryPort)
         wait_ready_sensors()
     
     def getColorName(self, rgb: list) -> str:
