@@ -48,6 +48,8 @@ class Navigation:
                     self.turnLeft()
 
             elif color=="GREEN":
+                self.motorL.set_power(0)
+                self.motorR.set_power(0)
                 # Update location, return DELIVERY flag if correct location
                 # If DELIVERY flag is returned, the main module must call goTowardsPath() and turnTowardsNextLocation()
                 self.updatePosition()
@@ -73,11 +75,11 @@ class Navigation:
             
             else:
                 if(self.isForward):
-                    self.motorL.set_power(-30)
-                    self.motorR.set_power(-30)
+                    self.motorL.set_power(-25)
+                    self.motorR.set_power(-25)
                 else:
-                    self.motorL.set_power(30)
-                    self.motorR.set_power(30)
+                    self.motorL.set_power(25)
+                    self.motorR.set_power(25)
 
             sleep(0.1)
 

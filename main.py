@@ -3,8 +3,20 @@ from color_detection import ColorDetector
 from delivery import Delivery
 
 if __name__ == "__main__":
-    nav = Navigation()
+    nav = Navigation("A","B")
     deliv = Delivery()
+
+    while(True):
+        deliv.loadingSequence()
+        deliv.isLoadingComplete()
+        
+        while(True):
+           instruction=nav.navSequence()
+           if(instruction=="Delivery"):
+               deliv.deliverySequence()
+           else:
+               break
+            
 
     """
     FIRST ITERATION:
