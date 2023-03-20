@@ -1,5 +1,7 @@
 from utils.brick import EV3ColorSensor, wait_ready_sensors
 from math import sqrt
+from statistics import mode
+from time import sleep
 
 class ColorDetector:
     """Class for the color detection algorithm."""
@@ -72,4 +74,8 @@ class ColorDetector:
             
     def getNavSensorColor(self) -> str:
         """Returns the name of the color detected by the navigation sensor."""
-        return self.getColorName(self.navSensor.get_rgb())
+        colors = []
+        for _ in range(3):
+            colors.append(self.getColorName(self.navSensor.get_rgb()))
+            sleep(0.05)
+        return mode(colors)
