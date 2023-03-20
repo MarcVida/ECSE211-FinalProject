@@ -91,11 +91,36 @@ class Navigation:
         self.motorR.set_power(-30)
     
     def goTowardsZone(self):
-        pass
+        """If it's going forward the delivery zone is to the right
+        """
+        if(self.isForward):
+            self.motorL.set_power(30)
+            sleep(0.75)
+            self.motorL.set_power(0)
+        
+        else:
+            self.motorR.set_power(30)
+            sleep(0.75)
+            self.motorR.set_power(0)
 
     def goTowardsPath(self):
-        pass
-
+        """Move back a little so it doesn't hit the cube. 
+        Turn back to the road
+        """
+        self.motorL.set_power(30)
+        self.motorR.set_power(30)
+        sleep(0.25)
+        self.motorL.set_power(0)
+        self.motorR.set_power(0)
+        if(self.isForward):
+            self.motorL.set_power(-30)
+            sleep(0.75)
+            self.motorL.set_power(0)
+        else:
+            self.motorR.set_power(-30)
+            sleep(0.75)
+            self.motorL.set_power(0)
+            
     def turnTowardsNextLocation(self):
         pass
 
