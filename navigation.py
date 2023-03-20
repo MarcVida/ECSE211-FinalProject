@@ -68,6 +68,7 @@ class Navigation:
                 self.motorL.set_power(0)
                 self.motorL.set_power(0)
                 self.turnTowardsNextLocation()
+                # TODO: RESET self.colors
                 return "LOADING"
             
             else:
@@ -131,33 +132,41 @@ class Navigation:
             self.motorL.set_power(0)
             
     def turnTowardsNextLocation(self):
-        if not self.colors:
-            if not self.isForward:
-                # 180 degrees turn
-                self.isForward = True
-            return
+        if self.currColor == "YELLOW": return
+
         self.currColor = self.colors.pop()
+        if self.currColor == "YELLOW":
+            self.rotateBackwards()
+            return
+
         curr = self.currLocation
-        if curr == 0 or curr == self.LAST_LOCATION:
-            # 180 degrees turn
-            return
-        if (self.currColor not in self.locations):
-            if not self.isForward:
-                # 180 degrees turn
-                self.isForward = True
-            return
-        next = self.locations.index(self.currColor)
-        # TODO: FINISH THIS
+        if curr == 0:
+            self.rotateForward()
+        elif curr == self.LAST_LOCATION:
+            self.rotateBackwards()
+        elif self.currColor not in self.locations:
+            self.rotateForward()
+        else:
+            next = self.locations.index(self.currColor)
+            if next > curr:
+                self.rotateForward()
+            else:
+                self.rotateBackwards()
 
 
     def getNextColor(self):
         
         pass
 
-    def turn180deg(self):
+    def rotateForward(self):
         if not self.isForward:
-                # 180 degrees turn
-                self.isForward = True
+            # 180 degrees turn
+            self.isForward = True
+    
+    def rotateBackwards(self):
+        if self.isForward:
+            # 180 degrees turn
+            self.isForward = False
 
     def log(self, message: str):
         """Prints a message is debug is set to True.
