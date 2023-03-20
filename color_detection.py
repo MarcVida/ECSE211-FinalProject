@@ -16,9 +16,8 @@ class ColorDetector:
     COLOR_TRESHOLD = 0.3
 
     navSensor: EV3ColorSensor = None
-    delSensor: EV3ColorSensor = None
 
-    def __init__(self, navigationPort: int, deliveryPort: int) -> None:
+    def __init__(self, navigationPort: int) -> None:
         """Constructor for the ColorDetector class.
 
         Args:
@@ -75,7 +74,3 @@ class ColorDetector:
     def getNavSensorColor(self) -> str:
         """Returns the name of the color detected by the navigation sensor."""
         return self.getColorName(self.navSensor.get_rgb())
-    
-    def getDelSensorColor(self) -> str:
-        """Returns the name of the color detected by the delivery sensor."""
-        return self.getColorName(self.delSensor.get_rgb())

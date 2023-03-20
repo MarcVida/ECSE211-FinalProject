@@ -11,7 +11,7 @@ class Navigation:
     isForward=True
     LAST_LOCATION = 6
     locations = [None for _ in range(0,LAST_LOCATION+1)]
-    colorOrder = ["","","","","",""]
+    colors = ["","","","","",""]
     currColor: str = None
 
     currLocation = 0
