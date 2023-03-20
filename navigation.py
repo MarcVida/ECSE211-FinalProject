@@ -5,13 +5,15 @@ from color_detection import ColorDetector
 class Navigation:
     """Class for the navigation subsystem"""
 
+    TURN_180_TIME = 5
+
     colordetector: ColorDetector = None
     motorL: Motor = None
     motorR: Motor = None
     isForward=True
     LAST_LOCATION = 6
     locations = [None for _ in range(0,LAST_LOCATION+1)]
-    colors = ["","","","","",""]
+    colors = ["YELLOW","PURPLE","BLUE","GREEN", "YELLOW", "ORANGE","RED"]
     currColor: str = None
 
     currLocation = 0
@@ -70,7 +72,7 @@ class Navigation:
                 self.motorL.set_power(0)
                 self.motorL.set_power(0)
                 self.turnTowardsNextLocation()
-                # TODO: RESET self.colors
+                colors = ["YELLOW","PURPLE","BLUE","GREEN", "YELLOW", "ORANGE","RED"]
                 return "LOADING"
             
             else:
@@ -155,19 +157,22 @@ class Navigation:
             else:
                 self.rotateBackwards()
 
-
-    def getNextColor(self):
-        
-        pass
-
     def rotateForward(self):
         if not self.isForward:
-            # 180 degrees turn
+            self.motorL.set_power(-30)
+            self.motorR.set_power(30)
+            sleep(self.TURN_180_TIME)
+            self.motorL.set_power(0)
+            self.motorR.set_power(0)
             self.isForward = True
     
     def rotateBackwards(self):
         if self.isForward:
-            # 180 degrees turn
+            self.motorL.set_power(-30)
+            self.motorR.set_power(30)
+            sleep(self.TURN_180_TIME)
+            self.motorL.set_power(0)
+            self.motorR.set_power(0)
             self.isForward = False
 
     def log(self, message: str):
@@ -180,7 +185,8 @@ class Navigation:
 
 
 if __name__ == '__main__':
-    navigate=Navigation("A","B")
+    colorDet = ColorDetector(1)
+    navigate=Navigation("A","B", colorDet, debug=True)
     try:
         navigate.navSequence()
     except BaseException:

@@ -1,12 +1,19 @@
 from navigation import Navigation
 from color_detection import ColorDetector
 from delivery import Delivery
+from utils.brick import reset_brick
 
 if __name__ == "__main__":
-    nav = Navigation("A","B")
-    deliv = Delivery()
+    colorDet = ColorDetector(1)
+    navigate=Navigation("A","B", colorDet, debug=True)
+    try:
+        while True:
+            navigate.navSequence()
+    except BaseException:
+        reset_brick()
+        exit()
 
-    while(True):
+    """while(True):
         deliv.loadingSequence()
         deliv.isLoadingComplete()
         
@@ -15,7 +22,7 @@ if __name__ == "__main__":
            if(instruction=="Delivery"):
                deliv.deliverySequence()
            else:
-               break
+               break"""
             
 
     """
