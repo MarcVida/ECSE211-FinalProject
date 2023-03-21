@@ -4,7 +4,7 @@ from delivery import Delivery
 from utils.brick import reset_brick
 
 if __name__ == "__main__":
-    navigate = Navigation("A","B", 1, debug=True)
+    navigate = Navigation("B","C", 1, debug=True)
     #delivery = Delivery("D", 999, debug=True)
     try:
         while True:
