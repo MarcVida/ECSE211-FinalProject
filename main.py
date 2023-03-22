@@ -4,22 +4,22 @@ from delivery import Delivery
 from utils.brick import reset_brick
 
 if __name__ == "__main__":
-    navigate = Navigation("B","C", 1, debug=True)
+    navigate = Navigation("B","C", 3, 1, debug=True)
     #delivery = Delivery("D", 999, debug=True)
     try:
         while True:
-            flag = navigate.navSequence()
-            if flag == "DELIVERY":
-                # TODO: do delivery
-                #delivery.deliverySequence()
-                print("DELIVERY")
-                navigate.goTowardsPath()
-                navigate.turnTowardsNextLocation()
-            elif flag == "LOADING":
-                # TODO: do loading
-                #delivery.loadingSequence()
-                print("LOADING")
-                pass
+            # TODO: do loading
+            #delivery.loadingSequence()
+            while True:
+                flag = navigate.navSequence()
+                if flag == "DELIVERY":
+                    # TODO: do delivery
+                    #delivery.deliverySequence()
+                    print("DELIVERY")
+                    navigate.goTowardsPath()
+                    navigate.turnTowardsNextLocation()
+                elif flag == "LOADING":
+                    break
     except BaseException as e:
         reset_brick()
         raise e

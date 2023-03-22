@@ -16,10 +16,12 @@ class ColorDetector:
         "YELLOW": [0.4501223, 0.5066404, 0.0432373],
     }
     COLOR_TRESHOLD = 0.3
+    SAMPLING_PERIOD = 0.02
 
     navSensor: EV3ColorSensor = None
+    delSensor: EV3ColorSensor = None
 
-    def __init__(self, navigationPort: int) -> None:
+    def __init__(self, navigationPort: int, deliveryPort: int) -> None:
         """Constructor for the ColorDetector class.
 
         Args:
@@ -27,6 +29,7 @@ class ColorDetector:
             deliveryPort (int): The port of the delivery color sensor
         """
         if (not self.navSensor): self.navSensor = EV3ColorSensor(navigationPort)
+        if (not self.delSensor): self.delSensor = EV3ColorSensor(deliveryPort)
         wait_ready_sensors()
     
     def getColorName(self, rgb: list) -> str:
@@ -77,5 +80,13 @@ class ColorDetector:
         colors = []
         for _ in range(3):
             colors.append(self.getColorName(self.navSensor.get_rgb()))
-            sleep(0.05)
+            sleep(self.SAMPLING_PERIOD)
+        return mode(colors)
+    
+    def getDelSensorColor(self) -> str:
+        """Returns the name of the color detected by the delivery sensor."""
+        colors = []
+        for _ in range(3):
+            colors.append(self.getColorName(self.delSensor.get_rgb()))
+            sleep(self.SAMPLING_PERIOD)
         return mode(colors)

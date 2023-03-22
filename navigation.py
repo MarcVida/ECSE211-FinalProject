@@ -5,8 +5,9 @@ from color_detection import ColorDetector
 class Navigation:
     """Class for the navigation subsystem"""
 
-    TURN_180_TIME = 6.5
-    TURN_SPEED = 20
+    TURN_180_TIME = 4.5
+    TURN_SPEED = 25
+    FORWARD_SPEED = 30
 
     colordetector: ColorDetector = None
     motorL: Motor = None
@@ -20,7 +21,7 @@ class Navigation:
     timer = 0
 
 
-    def __init__(self, motorPortL: int, motorPortR: int, colorDetectorPort: int, debug: bool=False) -> None:
+    def __init__(self, motorPortL: int, motorPortR: int, navigationColorPort: int, deliveryColorPort: int, debug: bool=False) -> None:
         """Constructor for the Navigation class.
 
         Args:
@@ -30,35 +31,37 @@ class Navigation:
         """
         self.motorL = Motor(motorPortL)
         self.motorR = Motor(motorPortR)
-        self.colordetector = ColorDetector(colorDetectorPort)
+        self.colordetector = ColorDetector(navigationColorPort, deliveryColorPort)
         self.debug=debug
 
     def navSequence(self):
         self.resetTimer()
         while(True):
-            color=self.colordetector.getNavSensorColor()
+            navColor=self.colordetector.getNavSensorColor()
+            #delColor=self.colordetector.getDelSensorColor()
 
-            if color=="BLUE":
-                if(self.isForward):
-                    self.turnLeft()
-                else:
-                    self.turnRight()
-
-            elif color=="RED":
+            if navColor=="BLUE":
                 if(self.isForward):
                     self.turnRight()
                 else:
                     self.turnLeft()
 
-            elif color=="GREEN" and time() > self.timer:
+            elif navColor=="RED":
+                if(self.isForward):
+                    self.turnLeft()
+                else:
+                    self.turnRight()
+
+            elif navColor=="GREEN" and time() > self.timer:
                 # Update location, return DELIVERY flag if correct location
                 # If DELIVERY flag is returned, the main module must call goTowardsPath() and turnTowardsNextLocation()
                 self.stop()
                 self.updateLocation()
+
                 self.log(f"current location: index={self.currLocation}, color={self.colorsInMap[self.currLocation]}")
                 if not self.colorsInMap[self.currLocation]:
                     self.goTowardsZone()
-                    zoneColor = self.colordetector.getNavSensorColor()
+                    zoneColor = self.colordetector.getDelSensorColor()
                     self.colorsInMap[self.currLocation] = zoneColor
                     self.log(f"detected color: {zoneColor}")
                     self.log(f"colors in map update: {self.colorsInMap}")
@@ -70,10 +73,11 @@ class Navigation:
                     return "DELIVERY"
                 self.log("no delivery")
                 if self.currLocation == self.LAST_LOCATION:
+                    self.currLocation = self.LAST_LOCATION + 1
                     self.rotateBackwards()
                 self.resetTimer()
 
-            elif color=="YELLOW" and time() > self.timer:
+            elif navColor=="YELLOW" and time() > self.timer:
                 # Return LOADING flag
                 self.stop()
                 self.updateLocation()
@@ -87,7 +91,7 @@ class Navigation:
             else:
                 self.goForward()
 
-            sleep(0.1)
+            sleep(0.05)
 
     def updateLocation(self):
         """Keeps track of position relative to the yellow/green lines on the map
@@ -101,16 +105,16 @@ class Navigation:
 
 
     def turnLeft(self):
-        self.motorL.set_power(-self.TURN_SPEED)
+        self.motorL.set_power(self.TURN_SPEED)
         self.motorR.set_power(0)
 
     def turnRight(self):
         self.motorL.set_power(0)
-        self.motorR.set_power(-self.TURN_SPEED)
+        self.motorR.set_power(self.TURN_SPEED)
 
     def goForward(self):
-        self.motorL.set_power(-20)
-        self.motorR.set_power(-20)
+        self.motorL.set_power(self.FORWARD_SPEED)
+        self.motorR.set_power(self.FORWARD_SPEED)
 
     def stop(self):
         self.motorL.set_power(0)
@@ -175,8 +179,8 @@ class Navigation:
             self.log("rotating forward")
             self.goForward()
             sleep(4)
-            self.motorL.set_power(-self.TURN_SPEED)
-            self.motorR.set_power(self.TURN_SPEED)
+            self.motorL.set_power(self.TURN_SPEED)
+            self.motorR.set_power(-self.TURN_SPEED)
             sleep(self.TURN_180_TIME)
             self.motorL.set_power(0)
             self.motorR.set_power(0)
