@@ -9,7 +9,7 @@ class Navigation:
     TURN_180_TIME = 1.5
     TURN_180_SPEED = 35
     TURN_SPEED = 45
-    TURN_PIVOT = 0.5    # 0 = the static wheel is the pivot, 1 = the center is the pivot
+    TURN_PIVOT = 0.1    # 0 = the static wheel is the pivot, 1 = the center is the pivot
     FORWARD_SPEED = 25
     TURN_DET_TIME = 0
     TURN_DET_SPEED = 30
@@ -80,8 +80,10 @@ class Navigation:
                         self.goTowardsZone()
                         #zoneColor = self.colorDetector.getNavSensorColor()
                         zoneColor = self.tryToDetectColor()
-                        self.colorsInMap[self.currLocation] = zoneColor
                         self.log(f"detected color: {zoneColor}")
+                        if zoneColor in self.colorsInMap:
+                            zoneColor = "DUMMY"
+                        self.colorsInMap[self.currLocation] = zoneColor
                         self.log(f"colors in map update: {self.colorsInMap}")
                         self.goTowardsPath()
                         if self.currLocation >= self.LAST_LOCATION:
@@ -96,6 +98,12 @@ class Navigation:
                             return "LOADING"
                     elif self.isForward and self.colorsInMap[self.currLocation] == self.nextColor: #or True:
                         self.stop()
+                        sleep(self.PAUSE_DEL_TIME)
+                        return "DELIVERY"
+                    elif self.isForward and (self.nextColor not in self.colorsInMap) and self.colorsInMap[self.currLocation] == "DUMMY":
+                        self.stop()
+                        self.colorsInMap[self.currLocation] = self.nextColor
+                        self.log(f"colors in map update (dummy color replaced): {self.colorsInMap}")
                         sleep(self.PAUSE_DEL_TIME)
                         return "DELIVERY"
                     self.log("no delivery")
