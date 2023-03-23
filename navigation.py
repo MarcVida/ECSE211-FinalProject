@@ -6,14 +6,12 @@ class Navigation:
     """Class for the navigation subsystem"""
 
     TURN_180_TIME = 0.8
-    TURN_180_SPEED = -35
-    TURN_SPEED = -50
-    #-45
-    FORWARD_SPEED = -40
-    #-25
+    TURN_180_SPEED = 35
+    TURN_SPEED = 45
+    FORWARD_SPEED = 25
     TURN_DEL_TIME = 1.2
-    TURN_DEL_SPEED = -35
-    BACK_TIME = 1.5
+    TURN_DEL_SPEED = 35
+    FORWARD_DEL_TIME = 0.15
 
     colordetector: ColorDetector = None
     motorL: Motor = None
@@ -21,7 +19,7 @@ class Navigation:
     isForward = True
     LAST_LOCATION = 6
     colorsInMap = [None] * (LAST_LOCATION + 1)
-    colorsToDeliver = ["PURPLE","BLUE","GREEN", "YELLOW", "ORANGE"]
+    colorsToDeliver = ["PURPLE","BLUE","GREEN","YELLOW","ORANGE"]
     nextColor = "RED"
     currLocation = 0
     timer = 0
@@ -108,20 +106,20 @@ class Navigation:
 
 
     def turnLeft(self):
-        self.motorL.set_power(-self.TURN_SPEED)
+        self.motorL.set_power(self.TURN_SPEED)
         self.motorR.set_power(0)
 
     def turnRight(self):
         self.motorL.set_power(0)
-        self.motorR.set_power(-self.TURN_SPEED)
+        self.motorR.set_power(self.TURN_SPEED)
 
     def goForward(self):
-        self.motorL.set_power(-self.FORWARD_SPEED)
-        self.motorR.set_power(-self.FORWARD_SPEED)
-        
-    def goBackwards(self):
         self.motorL.set_power(self.FORWARD_SPEED)
         self.motorR.set_power(self.FORWARD_SPEED)
+        
+    def goBackwards(self):
+        self.motorL.set_power(-self.FORWARD_SPEED)
+        self.motorR.set_power(-self.FORWARD_SPEED)
 
     def stop(self):
         self.motorL.set_power(0)
@@ -131,22 +129,14 @@ class Navigation:
         """If it's going forward the delivery zone is to the right
         """
         self.log("go towards zone")
-        if(not self.isForward):
+        if(self.isForward):
             self.motorR.set_power(self.TURN_DEL_SPEED)
-            #self.motorL.set_power(-self.TURN_DEL_SPEED)
         
         else:
             self.motorR.set_power(-self.TURN_DEL_SPEED)
-            #self.motorL.set_power(self.TURN_DEL_SPEED)
         sleep(self.TURN_DEL_TIME)
         self.goForward()
-        sleep(0.15)
-        self.stop()
-        
-    def goTowardsZoneDel(self):
-        self.goTowardsZone()
-        self.goBackwards()
-        sleep(self.BACK_TIME)
+        sleep(self.FORWARD_DEL_TIME)
         self.stop()
 
     def goTowardsPath(self):
@@ -154,23 +144,15 @@ class Navigation:
         Turn back to the road
         """
         self.goBackwards()
-        sleep(0.15)
+        sleep(self.FORWARD_DEL_TIME)
         self.stop()
-        if(not self.isForward):
+        if(self.isForward):
             self.motorR.set_power(-self.TURN_DEL_SPEED)
-            #self.motorL.set_power(self.TURN_DEL_SPEED)
         else:
-            #self.motorL.set_power(-self.TURN_DEL_SPEED)
             self.motorR.set_power(self.TURN_DEL_SPEED)
         sleep(self.TURN_DEL_TIME)
         
         self.stop()
-        
-    def goTowardsPathDel(self):
-        self.goForward()
-        sleep(self.BACK_TIME)
-        self.stop()
-        self.goTowardsPath()
             
     def turnTowardsNextLocation(self):
         if not self.colorsToDeliver:
@@ -198,8 +180,8 @@ class Navigation:
             self.log("rotating forward")
             self.goForward()
             sleep(2)
-            self.motorL.set_power(self.TURN_180_SPEED)
-            self.motorR.set_power(-self.TURN_180_SPEED)
+            self.motorL.set_power(-self.TURN_180_SPEED)
+            self.motorR.set_power(self.TURN_180_SPEED)
             sleep(self.TURN_180_TIME)
             self.motorL.set_power(0)
             self.motorR.set_power(0)
@@ -210,8 +192,8 @@ class Navigation:
             self.log("rotating backwards")
             self.goForward()
             sleep(2)
-            self.motorL.set_power(self.TURN_180_SPEED)
-            self.motorR.set_power(-self.TURN_180_SPEED)
+            self.motorL.set_power(-self.TURN_180_SPEED)
+            self.motorR.set_power(self.TURN_180_SPEED)
             sleep(self.TURN_180_TIME)
             self.motorL.set_power(0)
             self.motorR.set_power(0)
