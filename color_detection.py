@@ -75,7 +75,7 @@ class ColorDetector:
     def getNavSensorColor(self) -> str:
         """Returns the name of the color detected by the navigation sensor."""
         colors = []
-        for _ in range(3):
+        for _ in range(5):
             colors.append(self.getColorName(self.navSensor.get_rgb()))
-            sleep(0.05)
+            sleep(0.02)
         return mode(colors)

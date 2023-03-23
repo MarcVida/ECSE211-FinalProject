@@ -45,10 +45,10 @@ class Delivery:
         """Starts the delivery sequence: Drop a cube.
         """
         self.log("Dropping cube...")
-        self.deliveryMotor.set_limits(40)
-        self.deliveryMotor.set_position_relative(-90)
-        sleep(1)
+        self.deliveryMotor.set_limits(60)
         self.deliveryMotor.set_position_relative(-80)
+        sleep(1)
+        self.deliveryMotor.set_position_relative(80)
         sleep(1)
         self.deliveryMotor.set_power(0)
         self.log("Delivery complete.")
@@ -62,7 +62,7 @@ class Delivery:
         if self.debug: print(message)
     
 if __name__ == "__main__":
-    delivery = Delivery(1, 2, debug=True)
+    delivery = Delivery("D", 2, debug=True)
     while(True):
         try:
             delivery.loadingSequence()

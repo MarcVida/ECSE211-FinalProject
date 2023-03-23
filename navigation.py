@@ -5,8 +5,15 @@ from color_detection import ColorDetector
 class Navigation:
     """Class for the navigation subsystem"""
 
-    TURN_180_TIME = 6.5
-    TURN_SPEED = 20
+    TURN_180_TIME = 0.8
+    TURN_180_SPEED = -35
+    TURN_SPEED = -50
+    #-45
+    FORWARD_SPEED = -40
+    #-25
+    TURN_DEL_TIME = 1.2
+    TURN_DEL_SPEED = -35
+    BACK_TIME = 1.5
 
     colordetector: ColorDetector = None
     motorL: Motor = None
@@ -38,13 +45,13 @@ class Navigation:
         while(True):
             color=self.colordetector.getNavSensorColor()
 
-            if color=="BLUE":
+            if color=="RED":
                 if(self.isForward):
                     self.turnLeft()
                 else:
                     self.turnRight()
 
-            elif color=="RED":
+            elif color=="BLUE":
                 if(self.isForward):
                     self.turnRight()
                 else:
@@ -87,7 +94,7 @@ class Navigation:
             else:
                 self.goForward()
 
-            sleep(0.1)
+            sleep(0.01)
 
     def updateLocation(self):
         """Keeps track of position relative to the yellow/green lines on the map
@@ -109,8 +116,12 @@ class Navigation:
         self.motorR.set_power(-self.TURN_SPEED)
 
     def goForward(self):
-        self.motorL.set_power(-20)
-        self.motorR.set_power(-20)
+        self.motorL.set_power(-self.FORWARD_SPEED)
+        self.motorR.set_power(-self.FORWARD_SPEED)
+        
+    def goBackwards(self):
+        self.motorL.set_power(self.FORWARD_SPEED)
+        self.motorR.set_power(self.FORWARD_SPEED)
 
     def stop(self):
         self.motorL.set_power(0)
@@ -120,34 +131,46 @@ class Navigation:
         """If it's going forward the delivery zone is to the right
         """
         self.log("go towards zone")
-        """if(self.isForward):
-            self.motorL.set_power(30)
-            sleep(0.75)
-            self.motorL.set_power(0)
+        if(not self.isForward):
+            self.motorR.set_power(self.TURN_DEL_SPEED)
+            #self.motorL.set_power(-self.TURN_DEL_SPEED)
         
         else:
-            self.motorR.set_power(30)
-            sleep(0.75)
-            self.motorR.set_power(0)"""
+            self.motorR.set_power(-self.TURN_DEL_SPEED)
+            #self.motorL.set_power(self.TURN_DEL_SPEED)
+        sleep(self.TURN_DEL_TIME)
+        self.goForward()
+        sleep(0.15)
+        self.stop()
+        
+    def goTowardsZoneDel(self):
+        self.goTowardsZone()
+        self.goBackwards()
+        sleep(self.BACK_TIME)
+        self.stop()
 
     def goTowardsPath(self):
         """Move back a little so it doesn't hit the cube. 
         Turn back to the road
         """
-        self.log("go towards path")
-        """self.motorL.set_power(30)
-        self.motorR.set_power(30)
-        sleep(0.25)
-        self.motorL.set_power(0)
-        self.motorR.set_power(0)
-        if(self.isForward):
-            self.motorL.set_power(-30)
-            sleep(0.75)
-            self.motorL.set_power(0)
+        self.goBackwards()
+        sleep(0.15)
+        self.stop()
+        if(not self.isForward):
+            self.motorR.set_power(-self.TURN_DEL_SPEED)
+            #self.motorL.set_power(self.TURN_DEL_SPEED)
         else:
-            self.motorR.set_power(-30)
-            sleep(0.75)
-            self.motorL.set_power(0)"""
+            #self.motorL.set_power(-self.TURN_DEL_SPEED)
+            self.motorR.set_power(self.TURN_DEL_SPEED)
+        sleep(self.TURN_DEL_TIME)
+        
+        self.stop()
+        
+    def goTowardsPathDel(self):
+        self.goForward()
+        sleep(self.BACK_TIME)
+        self.stop()
+        self.goTowardsPath()
             
     def turnTowardsNextLocation(self):
         if not self.colorsToDeliver:
@@ -174,9 +197,9 @@ class Navigation:
         if not self.isForward:
             self.log("rotating forward")
             self.goForward()
-            sleep(4)
-            self.motorL.set_power(-self.TURN_SPEED)
-            self.motorR.set_power(self.TURN_SPEED)
+            sleep(2)
+            self.motorL.set_power(self.TURN_180_SPEED)
+            self.motorR.set_power(-self.TURN_180_SPEED)
             sleep(self.TURN_180_TIME)
             self.motorL.set_power(0)
             self.motorR.set_power(0)
@@ -186,9 +209,9 @@ class Navigation:
         if self.isForward:
             self.log("rotating backwards")
             self.goForward()
-            sleep(4)
-            self.motorL.set_power(-self.TURN_SPEED)
-            self.motorR.set_power(self.TURN_SPEED)
+            sleep(2)
+            self.motorL.set_power(self.TURN_180_SPEED)
+            self.motorR.set_power(-self.TURN_180_SPEED)
             sleep(self.TURN_180_TIME)
             self.motorL.set_power(0)
             self.motorR.set_power(0)
