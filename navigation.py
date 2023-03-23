@@ -114,7 +114,7 @@ class Navigation:
 
     def stop(self):
         self.motorL.set_power(0)
-        self.motorL.set_power(0)
+        self.motorR.set_power(0)
     
     def goTowardsZone(self):
         """If it's going forward the delivery zone is to the right
@@ -157,7 +157,7 @@ class Navigation:
 
         self.nextColor = self.colorsToDeliver.pop()
         self.log(f"next color: {self.nextColor}")
-        curr = self.currLocation
+        """curr = self.currLocation
 
         if curr == self.LAST_LOCATION:
             self.rotateBackwards()
@@ -168,7 +168,7 @@ class Navigation:
             if next > curr:
                 self.rotateForward()
             else:
-                self.rotateBackwards()
+                self.rotateBackwards()"""
 
     def rotateForward(self):
         if not self.isForward:

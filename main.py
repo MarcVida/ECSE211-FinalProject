@@ -14,7 +14,7 @@ if __name__ == "__main__":
                 #delivery.deliverySequence()
                 print("DELIVERY")
                 navigate.goTowardsPath()
-                navigate.turnTowardsNextLocation()
+                #navigate.turnTowardsNextLocation()
             elif flag == "LOADING":
                 # TODO: do loading
                 #delivery.loadingSequence()
