@@ -7,19 +7,15 @@ if __name__ == "__main__":
     navigate = Navigation("B","C", 1, debug=True)
     delivery = Delivery("D", 2, debug=True)
     try:
+        #delivery.loadingSequence()
         while True:
             flag = navigate.navSequence()
             if flag == "DELIVERY":
-                # TODO: do delivery
-                delivery.deliverySequence()
                 print("DELIVERY")
-                navigate.goTowardsPath()
+                delivery.deliverySequence()
                 navigate.turnTowardsNextLocation()
             elif flag == "LOADING":
-                # TODO: do loading
                 delivery.loadingSequence()
-                print("LOADING")
-                pass
     except BaseException as e:
         reset_brick()
         raise e
