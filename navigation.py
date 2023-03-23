@@ -75,6 +75,7 @@ class Navigation:
                 if self.isFirstIteration:
                     if self.currLocation <= 0:
                         self.rotateForward()
+                        self.currLocation = 0
                         self.isFirstIteration = False
                     elif self.isForward:
                         self.goTowardsZone()
