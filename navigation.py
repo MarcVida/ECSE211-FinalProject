@@ -9,8 +9,9 @@ class Navigation:
     TURN_180_TIME = 1.5
     TURN_180_SPEED = 35
     TURN_SPEED = 45
+    TURN_PIVOT = 0.5    # 0 = the static wheel is the pivot, 1 = the center is the pivot
     FORWARD_SPEED = 25
-    TURN_DET_TIME = 0 #1.7
+    TURN_DET_TIME = 0
     TURN_DET_SPEED = 30
     FORWARD_DET_TIME = 0.8
 
@@ -20,7 +21,7 @@ class Navigation:
     TURN_TRY_SPEED = 20
     OFFSET_TRY_TIME = 0.2
 
-    PAUSE_TIME = 0.5
+    PAUSE_DEL_TIME = 0.5
 
     colorDetector: ColorDetector = None
     motorR: Motor = None
@@ -67,7 +68,7 @@ class Navigation:
 
             elif (color=="GREEN" or color=="YELLOW") and time() > self.timer:
                 # Update location, return a flag if necessary
-                # If DELIVERY flag is returned, the main module must call goTowardsPath() and turnTowardsNextLocation()
+                # If DELIVERY flag is returned, the main module must call turnTowardsNextLocation() after the delivery
                 self.stop()
                 self.updateLocation()
                 self.log(f"current location: index={self.currLocation}, color={self.colorsInMap[self.currLocation]}")
@@ -95,7 +96,7 @@ class Navigation:
                             return "LOADING"
                     elif self.isForward and self.colorsInMap[self.currLocation] == self.nextColor: #or True:
                         self.stop()
-                        sleep(self.PAUSE_TIME)
+                        sleep(self.PAUSE_DEL_TIME)
                         return "DELIVERY"
                     self.log("no delivery")
                     if self.currLocation >= self.LAST_LOCATION:
@@ -171,10 +172,10 @@ class Navigation:
 
     def turnLeft(self):
         self.motorR.set_power(self.TURN_SPEED)
-        self.motorL.set_power(0)
+        self.motorL.set_power(-self.TURN_SPEED * self.TURN_PIVOT)
 
     def turnRight(self):
-        self.motorR.set_power(0)
+        self.motorR.set_power(-self.TURN_SPEED * self.TURN_PIVOT)
         self.motorL.set_power(self.TURN_SPEED)
 
     def goForward(self, speed=FORWARD_SPEED):
@@ -201,11 +202,6 @@ class Navigation:
         self.rotate(self.TURN_DET_SPEED)
         while color == "GREEN":
             color = self.colorDetector.getNavSensorColor()
-        """if(self.isForward):
-            self.motorL.set_power(self.TURN_DEL_SPEED)
-        else:
-            self.motorL.set_power(-self.TURN_DEL_SPEED)"""
-        #sleep(self.TURN_DET_TIME)
         self.TURN_DET_TIME = time() - tempTimer
         self.goForward()
         sleep(self.FORWARD_DET_TIME)
@@ -218,10 +214,6 @@ class Navigation:
         sleep(self.FORWARD_DET_TIME * 1.3)
         self.stop()
         self.rotate(-self.TURN_DET_SPEED)
-        """if(self.isForward):
-            self.motorL.set_power(-self.TURN_DEL_SPEED)
-        else:
-            #self.motorL.set_power(self.TURN_DEL_SPEED)"""
         sleep(self.TURN_DET_TIME)
         self.stop()
     
