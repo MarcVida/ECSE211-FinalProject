@@ -23,7 +23,7 @@ class Navigation:
     TURN_TRY_SPEED = 20
     OFFSET_TRY_TIME = 0.2
 
-    ROTATE_CAL_AMPLITUDE = 0.8 # 0 = doesn't rotate (do not try), 1 = rotates until perpenticular to green line, >1 = rotates even more
+    ROTATE_CAL_AMPLITUDE = 0.9 # 0 = doesn't rotate (do not try), 1 = rotates until perpenticular to green line, >1 = rotates even more
 
     PAUSE_DEL_TIME = 0.5
 
@@ -103,14 +103,14 @@ class Navigation:
                             return "LOADING"
                     elif self.isForward and self.colorsInMap[self.currLocation] == self.nextColor:
                         self.stop()
-                        self.calibrateDirection() # TODO: verify if it works
+                        #self.calibrateDirection() # TODO: verify if it works
                         sleep(self.PAUSE_DEL_TIME)
                         return "DELIVERY"
                     elif self.isForward and (self.nextColor not in self.colorsInMap) and self.colorsInMap[self.currLocation] == "DUMMY":
                         self.stop()
                         self.colorsInMap[self.currLocation] = self.nextColor
                         self.log(f"colors in map update (dummy color replaced): {self.colorsInMap}")
-                        self.calibrateDirection() # TODO: verify if it works
+                        #self.calibrateDirection() # TODO: verify if it works
                         sleep(self.PAUSE_DEL_TIME)
                         return "DELIVERY"
                     self.log("no delivery")
@@ -355,12 +355,10 @@ class Navigation:
         
     def calibrateDirection(self):
         # Rotate to the left until green line is not detected
-        tempTimerL = time()
         color = "GREEN"
         self.rotate(-self.TURN_TRY_SPEED)
         while color == "GREEN":
             color = self.colorDetector.getNavSensorColor()
-        tempTimerL = time() - tempTimerL
 
         # Rotate to the right until green line is not detected
         tempTimerR = time()
@@ -372,7 +370,7 @@ class Navigation:
         tempTimerR = time() - tempTimerR
 
         # Rotate to the left until robot is perpenticular to the green line
-        rotateBackTime = (tempTimerL + tempTimerR) / 2
+        rotateBackTime = tempTimerR / 2
         self.rotate(-self.TURN_TRY_SPEED)
         sleep(rotateBackTime * self.ROTATE_CAL_AMPLITUDE)
         self.stop()
