@@ -7,7 +7,7 @@ if __name__ == "__main__":
     navigate = Navigation("B","C", 1, debug=True)
     delivery = Delivery("D", 2, debug=True)
     try:
-        #delivery.loadingSequence()
+        delivery.loadingSequence()
         while True:
             flag = navigate.navSequence()
             if flag == "DELIVERY":

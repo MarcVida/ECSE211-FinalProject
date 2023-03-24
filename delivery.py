@@ -13,6 +13,9 @@ class Delivery:
     loadingTS: TouchSensor = None
     SOUND1: Sound = None
     SOUND2: Sound = None
+    MOVEMENT_DEG = 80 #80
+    MOVEMENT_TIME = 1.5 #1
+    MOVEMENT_LIMIT = 50 #60
 
     def __init__(self, deliveryPort: int, loadingPort: int, debug: bool = False) -> None:
         """Constructor for the Delivery class.
@@ -45,11 +48,11 @@ class Delivery:
         """Starts the delivery sequence: Drop a cube.
         """
         self.log("Dropping cube...")
-        self.deliveryMotor.set_limits(60)
-        self.deliveryMotor.set_position_relative(-80)
-        sleep(1)
-        self.deliveryMotor.set_position_relative(80)
-        sleep(1)
+        self.deliveryMotor.set_limits(self.MOVEMENT_LIMIT)
+        self.deliveryMotor.set_position_relative(-self.MOVEMENT_DEG)
+        sleep(self.MOVEMENT_TIME)
+        self.deliveryMotor.set_position_relative(self.MOVEMENT_DEG)
+        sleep(self.MOVEMENT_TIME)
         self.deliveryMotor.set_power(0)
         self.log("Delivery complete.")
 
