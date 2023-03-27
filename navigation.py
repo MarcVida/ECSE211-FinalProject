@@ -7,21 +7,21 @@ class Navigation:
     """Class for the navigation subsystem"""
 
     FORWARD_180_TIME = 0.1
-    TURN_180_TIME = 1.4
+    TURN_180_TIME = 1.1
     TURN_180_SPEED = 35
-    TURN_SPEED = 45 #45
+    TURN_SPEED = 40 #45
     TURN_PIVOT = 0.1    # 0 = the static wheel is the pivot, 1 = the center is the pivot
     FORWARD_SPEED = 25 #25
     TURN_DET_TIME = 0
-    TURN_DET_MIN_TIME = 0.3    # minimum time the robot should turn
-    TURN_DET_SPEED = 30
+    TURN_DET_MIN_TIME = 0.4    # minimum time the robot should turn
+    TURN_DET_SPEED = 20
     FORWARD_DET_TIME = 0.8
-    BACKWARDS_DET_TIME = 0.5
+    BACKWARDS_DET_TIME = 0.3
 
     FORWARD_TRY_TIME = 0.3 #0.5
-    FORWARD_TRY_SPEED = 25 #15
-    TURN_TRY_TIME = 0.3 #0.8
-    TURN_TRY_SPEED = 30 #20
+    FORWARD_TRY_SPEED = 24 #15
+    TURN_TRY_TIME = 0.5 #0.8
+    TURN_TRY_SPEED = 20 #20
     OFFSET_TRY_TIME = 0 #0.2
 
     ROTATE_CAL_AMPLITUDE = 1 # 0 = doesn't rotate (do not try), 1 = rotates until perpenticular to green line, >1 = rotates even more
@@ -90,6 +90,7 @@ class Navigation:
                 self.stop()
                 self.updateLocation()
                 self.log(f"current location: index={self.currLocation}, color={self.colorsInMap[self.currLocation]}")
+                #self.calibrateDirection()
                 if self.isFirstIteration:
                     if self.currLocation <= 0:
                         self.rotateForward()
@@ -98,13 +99,16 @@ class Navigation:
                     elif self.isForward:
                         self.goTowardsZone()
                         #zoneColor = self.colorDetector.getNavSensorColor()
-                        zoneColor = self.tryToDetectColor() # TODO: Try using tryToDetectColor2()
+                        zoneColor = self.tryToDetectColor2() # TODO: Try using tryToDetectColor2()
                         self.log(f"detected color: {zoneColor}")
                         if zoneColor in self.colorsInMap:
                             zoneColor = "DUMMY"
                         self.colorsInMap[self.currLocation] = zoneColor
                         self.log(f"colors in map update: {self.colorsInMap}")
                         self.goTowardsPath()
+                        if zoneColor == self.nextColor:
+                            sleep(self.PAUSE_DEL_TIME)
+                            return "DELIVERY"
                         if self.currLocation >= self.LAST_LOCATION:
                             self.currLocation = self.LAST_LOCATION
                             self.rotateBackwards()
@@ -118,14 +122,14 @@ class Navigation:
                             return "LOADING"
                     elif self.isForward and self.colorsInMap[self.currLocation] == self.nextColor:
                         self.stop()
-                        self.calibrateDirection() # TODO: verify if it works
+                        #self.calibrateDirection() # TODO: verify if it works
                         sleep(self.PAUSE_DEL_TIME)
                         return "DELIVERY"
                     elif self.isForward and (self.nextColor not in self.colorsInMap) and self.colorsInMap[self.currLocation] == "DUMMY":
                         self.stop()
                         self.colorsInMap[self.currLocation] = self.nextColor
                         self.log(f"colors in map update (dummy color replaced): {self.colorsInMap}")
-                        self.calibrateDirection() # TODO: verify if it works
+                        #self.calibrateDirection() # TODO: verify if it works
                         sleep(self.PAUSE_DEL_TIME)
                         return "DELIVERY"
                     self.log("no delivery")
@@ -321,7 +325,7 @@ class Navigation:
         # Go forward
         self.goForward(self.FORWARD_TRY_SPEED)
         #self.pollZoneColor(colors, tryTime)
-        sleep(tryTime)
+        sleep(self.self.OFFSET_TRY_TIME + self.FORWARD_TRY_TIME)
         self.stop()
         
         # Rotate in both directions
@@ -361,7 +365,7 @@ class Navigation:
         # Go backwards
         tryTime = time() + self.OFFSET_TRY_TIME
         self.goBackwards(self.FORWARD_TRY_SPEED)
-        sleep(tryTime)
+        sleep(self.OFFSET_TRY_TIME)
         self.stop()
         
         return mode(colors) if colors else "DUMMY"

@@ -39,9 +39,9 @@ for fileName in COLOR_SENSOR_DATA_FILES:
 
     color_report += f"File:\t{fileName}\n"
     color_report += "Mean:\t"
-    color_report += f"r = {round(mean(red),NBR_DECIMAL_DIGITS)}\t"
-    color_report += f"g = {round(mean(green),NBR_DECIMAL_DIGITS)}\t"
-    color_report += f"b = {round(mean(blue),NBR_DECIMAL_DIGITS)}\n"
+    color_report += f"[{round(mean(red),NBR_DECIMAL_DIGITS)}"
+    color_report += f",{round(mean(green),NBR_DECIMAL_DIGITS)}"
+    color_report += f",{round(mean(blue),NBR_DECIMAL_DIGITS)}]\n"
     color_report += "Stdev:\t"
     color_report += f"r = {round(stdev(red),NBR_DECIMAL_DIGITS)}\t"
     color_report += f"g = {round(stdev(green),NBR_DECIMAL_DIGITS)}\t"
