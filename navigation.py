@@ -60,28 +60,16 @@ class Navigation:
             color=self.colorDetector.getNavSensorColor()
 
             if color=="RED":
-                if True:
-                    if(self.isForward):
-                        self.turnLeft()
-                    else:
-                        self.turnRight()
+                if(self.isForward):
+                    self.turnLeft()
                 else:
-                    if self.isForward:
-                        self.rotate(-self.TURN_SPEED)
-                    else:
-                        self.rotate(self.TURN_SPEED)
+                    self.turnRight()
 
             elif color=="BLUE":
-                if True:
-                    if(self.isForward):
-                        self.turnRight()
-                    else:
-                        self.turnLeft()
+                if(self.isForward):
+                    self.turnRight()
                 else:
-                    if self.isForward:
-                        self.rotate(self.TURN_SPEED)
-                    else:
-                        self.rotate(-self.TURN_SPEED)
+                    self.turnLeft()
 
             elif (color=="GREEN" or color=="YELLOW") and time() > self.timer:
                 # Update location, return a flag if necessary
@@ -141,57 +129,6 @@ class Navigation:
                 self.goForward()
 
             sleep(0.01)
-
-    """def navSequence(self):
-        self.resetTimer()
-        while(True):
-            color=self.colordetector.getNavSensorColor()
-
-            if color=="RED":
-                if(self.isForward):
-                    self.turnLeft()
-                else:
-                    self.turnRight()
-
-            elif color=="BLUE":
-                if(self.isForward):
-                    self.turnRight()
-                else:
-                    self.turnLeft()
-
-            elif (color=="GREEN" or color=="YELLOW") and time() > self.timer:
-                # Update location, return DELIVERY flag if correct location
-                # If DELIVERY flag is returned, the main module must call goTowardsPath() and turnTowardsNextLocation()
-                self.stop()
-                self.updateLocation()
-                self.log(f"current location: index={self.currLocation}, color={self.colorsInMap[self.currLocation]}")
-                if self.currLocation <= 0:
-                    self.rotateForward()
-                    self.colorsToDeliver = ["YELLOW","PURPLE","BLUE","GREEN", "YELLOW", "ORANGE"]
-                    self.nextColor = "RED"
-                    self.currLocation = 0
-                    return "LOADING"
-                elif not self.colorsInMap[self.currLocation]:
-                    self.goTowardsZone()
-                    zoneColor = self.colordetector.getNavSensorColor()
-                    self.colorsInMap[self.currLocation] = zoneColor
-                    self.log(f"detected color: {zoneColor}")
-                    self.log(f"colors in map update: {self.colorsInMap}")
-                    if zoneColor == self.nextColor:
-                        return "DELIVERY"
-                    self.goTowardsPath()
-                elif self.colorsInMap[self.currLocation] == self.nextColor:
-                    self.goTowardsZone()
-                    return "DELIVERY"
-                self.log("no delivery")
-                if self.currLocation == self.LAST_LOCATION:
-                    self.rotateBackwards()
-                self.resetTimer()
-            
-            else:
-                self.goForward()
-
-            sleep(0.01)"""
 
     def updateLocation(self):
         """Keeps track of position relative to the yellow/green lines on the map
@@ -456,7 +393,7 @@ class Navigation:
             self.isForward = False
 
     def log(self, message: str):
-        """Prints a message is debug is set to True.
+        """Prints a message if debug is set to True.
 
         Args:
             message (str): The message to be printed
