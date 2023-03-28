@@ -15,7 +15,7 @@ class Delivery:
     SOUND2: Sound = None
     MOVEMENT_DEG = 80 #80
     MOVEMENT_TIME = 1 #1
-    MOVEMENT_LIMIT = 65 #60
+    MOVEMENT_LIMIT = 75 #65
 
     def __init__(self, deliveryPort: int, loadingPort: int, debug: bool = False) -> None:
         """Constructor for the Delivery class.

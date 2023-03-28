@@ -7,7 +7,7 @@ class Navigation:
     """Class for the navigation subsystem"""
 
     FORWARD_180_TIME = 0.1
-    TURN_180_TIME = 1.1
+    TURN_180_TIME = 1.17
     TURN_180_SPEED = 35
     TURN_SPEED = 40 #45
     TURN_PIVOT = 0.1    # 0 = the static wheel is the pivot, 1 = the center is the pivot
@@ -27,7 +27,6 @@ class Navigation:
     ROTATE_CAL_AMPLITUDE = 1 # 0 = doesn't rotate (do not try), 1 = rotates until perpenticular to green line, >1 = rotates even more
 
     PAUSE_DEL_TIME = 0.5
-    TURN_LAST_TIME = 1.5
 
     colorDetector: ColorDetector = None
     motorR: Motor = None
@@ -135,8 +134,6 @@ class Navigation:
                     self.log("no delivery")
                     if self.currLocation >= self.LAST_LOCATION:
                         self.currLocation = self.LAST_LOCATION
-                        self.goForward()
-                        sleep(self.TURN_LAST_TIME)
                         self.rotateBackwards()
                 self.resetTimer()
             
@@ -467,7 +464,7 @@ class Navigation:
         if self.debug: print(message)
 
     def resetTimer(self):
-        self.timer = time() + 1.8
+        self.timer = time() + 1.3
 
 
 if __name__ == '__main__':
