@@ -11,17 +11,17 @@ class Navigation:
     TURN_180_SPEED = 35
     TURN_SPEED = 40 #45
     TURN_PIVOT = 0.1    # 0 = the static wheel is the pivot, 1 = the center is the pivot
-    FORWARD_SPEED = 25 #25
+    FORWARD_SPEED = 25
     TURN_DET_TIME = 0
     TURN_DET_MIN_TIME = 0.4    # minimum time the robot should turn
     TURN_DET_SPEED = 20
     FORWARD_DET_TIME = 0.8
     BACKWARDS_DET_TIME = 0.3
 
-    FORWARD_TRY_TIME = 0.3 #0.5
-    FORWARD_TRY_SPEED = 24 #15
-    TURN_TRY_TIME = 0.5 #0.8
-    TURN_TRY_SPEED = 20 #20
+    FORWARD_TRY_TIME = 0.3
+    FORWARD_TRY_SPEED = 24
+    TURN_TRY_TIME = 0.5
+    TURN_TRY_SPEED = 20
     OFFSET_TRY_TIME = 0 #0.2
 
     ROTATE_CAL_AMPLITUDE = 1 # 0 = doesn't rotate (do not try), 1 = rotates until perpenticular to green line, >1 = rotates even more
@@ -86,7 +86,7 @@ class Navigation:
                     elif self.isForward:
                         self.goTowardsZone()
                         #zoneColor = self.colorDetector.getNavSensorColor()
-                        zoneColor = self.tryToDetectColor2() # TODO: Try using tryToDetectColor2()
+                        zoneColor = self.tryToDetectColor2()
                         self.log(f"detected color: {zoneColor}")
                         if zoneColor in self.colorsInMap:
                             zoneColor = "DUMMY"
@@ -193,6 +193,11 @@ class Navigation:
         self.stop()
     
     def tryToDetectColor(self):
+        """Executes a color detection sequence.
+
+        Returns:
+            str: The first non-white color detected
+        """
         color = "WHITE"
         tryTime = time() + self.OFFSET_TRY_TIME + self.FORWARD_TRY_TIME
 
@@ -253,6 +258,12 @@ class Navigation:
         return color
     
     def tryToDetectColor2(self):
+        """Executes a more sophisticated color detection sequence. It appends every non-white color
+        detected to a list, and returns the most frequent one.
+
+        Returns:
+            str: The mode of all non-white colors detected.
+        """
         colors = []
         tryTime = time() + self.OFFSET_TRY_TIME + self.FORWARD_TRY_TIME
 
@@ -372,6 +383,8 @@ class Navigation:
                 self.rotateBackwards()"""
 
     def rotateForward(self):
+        """Executes a 180 degree rotation until its direction is forward.
+        """
         if not self.isForward:
             self.log("rotating forward")
             self.goForward()
@@ -383,6 +396,8 @@ class Navigation:
             self.isForward = True
     
     def rotateBackwards(self):
+        """Executes a 180 degree rotation until its direction is backwards.
+        """
         if self.isForward:
             self.log("rotating backwards")
             self.goForward()
