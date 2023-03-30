@@ -2,6 +2,7 @@ from navigation import Navigation
 from color_detection import ColorDetector
 from delivery import Delivery
 from utils.brick import reset_brick
+from time import sleep
 
 if __name__ == "__main__":
     navigate = Navigation("B","C", 1, debug=True)
@@ -13,6 +14,12 @@ if __name__ == "__main__":
             if flag == "DELIVERY":
                 print("DELIVERY")
                 delivery.deliverySequence()
+                navigate.turnTowardsNextLocation()
+            elif flag == "DELIVERY BACK":
+                print("DELIVERY BACK")
+                delivery.deliverySequence()
+                navigate.goForward()
+                sleep(1.4)
                 navigate.turnTowardsNextLocation()
             elif flag == "LOADING":
                 delivery.loadingSequence()

@@ -13,9 +13,9 @@ class Delivery:
     loadingTS: TouchSensor = None
     SOUND1: Sound = None
     SOUND2: Sound = None
-    MOVEMENT_DEG = 80 #80
+    MOVEMENT_DEG = 90 #80
     MOVEMENT_TIME = 1 #1
-    MOVEMENT_LIMIT = 75 #65
+    MOVEMENT_LIMIT = 65 #65
 
     def __init__(self, deliveryPort: int, loadingPort: int, debug: bool = False) -> None:
         """Constructor for the Delivery class.
