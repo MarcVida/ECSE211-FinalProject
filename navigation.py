@@ -81,12 +81,6 @@ class Navigation:
                 self.rotateForward()
 
             if color=="RED" and time() > self.fwdTimer:
-            
-            if self.needsToTurnBack and time() > self.turnBackTimer:
-                self.needsToTurnBack = False
-                self.rotateForward()
-
-            if color=="RED" and time() > self.fwdTimer:
                 if True:
                     if(self.isForward):
                         self.turnLeft()
@@ -97,8 +91,6 @@ class Navigation:
                         self.rotate(-self.TURN_SPEED)
                     else:
                         self.rotate(self.TURN_SPEED)
-
-            elif (color=="WHITE" or color=="BLUE") and time() > self.fwdTimer:
             elif (color=="WHITE" or color=="BLUE") and time() > self.fwdTimer:
                 if True:
                     if(self.isForward):
@@ -521,17 +513,6 @@ class Navigation:
             if self.currLocation >= self.LAST_LOCATION:
                 self.currLocation = self.LAST_LOCATION
                 self.rotateBackwards()
-            elif not self.isFirstIteration:
-                if self.nextColor in self.colorsInMap:
-                    next=self.colorsInMap.index(self.nextColor)
-                    if next > self.currLocation:
-                        self.rotateForward()
-                        
-                    else:
-                        self.rotateBackwards()
-            self.goBackwards()
-            sleep(self.BACKWARDS_DET_TIME * 0.8)
-            self.stop()
             elif not self.isFirstIteration:
                 if self.nextColor in self.colorsInMap:
                     next=self.colorsInMap.index(self.nextColor)
