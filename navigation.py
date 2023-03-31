@@ -8,7 +8,10 @@ class Navigation:
 
     Left=False
     Right=True
+    Left=False
+    Right=True
     FORWARD_180_TIME = 0.1
+    TURN_180_TIME = 1.19
     TURN_180_TIME = 1.19
     TURN_180_SPEED = 35
     TURN_SPEED = 30 #25
@@ -19,12 +22,17 @@ class Navigation:
     TURN_DET_SPEED = 20
     FORWARD_DET_TIME = 0.8
     BACKWARDS_DET_TIME = 0.15
+    BACKWARDS_DET_TIME = 0.15
 
     FORWARD_TRY_TIME = 0.3 #0.5
     FORWARD_TRY_SPEED = 20 #15
     TURN_TRY_TIME = 0.4 #0.5
     TURN_TRY_SPEED = 20 #20
     OFFSET_TRY_TIME = 0.0 #0.2
+    FORWARD_TRY_SPEED = 24 #15
+    TURN_TRY_TIME = 0.4 #0.5
+    TURN_TRY_SPEED = 20 #20
+    OFFSET_TRY_TIME = 0.1 #0.2
 
     ROTATE_CAL_AMPLITUDE = 1 # 0 = doesn't rotate (do not try), 1 = rotates until perpenticular to green line, >1 = rotates even more
 
@@ -43,7 +51,10 @@ class Navigation:
     timer = 0
     fwdTimer = 0
     turnBackTimer = 0
+    fwdTimer = 0
+    turnBackTimer = 0
     isFirstIteration = True
+    needsToTurnBack = False
     needsToTurnBack = False
 
 
@@ -70,6 +81,12 @@ class Navigation:
                 self.rotateForward()
 
             if color=="RED" and time() > self.fwdTimer:
+            
+            if self.needsToTurnBack and time() > self.turnBackTimer:
+                self.needsToTurnBack = False
+                self.rotateForward()
+
+            if color=="RED" and time() > self.fwdTimer:
                 if True:
                     if(self.isForward):
                         self.turnLeft()
@@ -81,6 +98,7 @@ class Navigation:
                     else:
                         self.rotate(self.TURN_SPEED)
 
+            elif (color=="WHITE" or color=="BLUE") and time() > self.fwdTimer:
             elif (color=="WHITE" or color=="BLUE") and time() > self.fwdTimer:
                 if True:
                     if(self.isForward):
@@ -100,7 +118,9 @@ class Navigation:
                 self.updateLocation()
                 self.log(f"current location: index={self.currLocation}, color={self.colorsInMap[self.currLocation]}")
                 
+                
                 if self.isFirstIteration:
+
 
                     if self.currLocation <= 0:
                         self.rotateForward()
@@ -108,6 +128,7 @@ class Navigation:
                         self.isFirstIteration = False
                     elif self.isForward:
                         self.goTowardsZone()
+                        zoneColor = self.tryToDetectColor2()
                         zoneColor = self.tryToDetectColor2()
                         self.log(f"detected color: {zoneColor}")
                         if zoneColor in self.colorsInMap:
@@ -123,8 +144,18 @@ class Navigation:
                             self.stop()
                             sleep(self.PAUSE_DEL_TIME)
                             return "DELIVERY"
+                        """if zoneColor == self.nextColor:
+                            if self.currLocation >= self.LAST_LOCATION:
+                                self.isFirstIteration=False
+                            self.goForward()
+                            sleep(0.2)
+                            self.stop()
+                            sleep(self.PAUSE_DEL_TIME)
+                            return "DELIVERY"""
                         if self.currLocation >= self.LAST_LOCATION:
                             self.currLocation = self.LAST_LOCATION
+                            self.isFirstIteration=False
+                            #self.log("first iteration = " +self.isFirstIteration)
                             self.isFirstIteration=False
                             #self.log("first iteration = " +self.isFirstIteration)
                             self.rotateBackwards()
@@ -153,18 +184,40 @@ class Navigation:
                             #sleep(self.PAUSE_DEL_TIME)
                             #return "DELIVERY BACK"
                         
+                    elif self.colorsInMap[self.currLocation] == self.nextColor:
+                        if self.isForward:
+                            self.stop()
+#                         self.calibrateDirection() # TODO: verify if it works
+                            sleep(self.PAUSE_DEL_TIME)
+                            return "DELIVERY"
+                        else:
+                            self.needsToTurnBack = True
+                            self.resetTurnBackTimer()
+                            self.currLocation -= 1
+                            #self.rotateForward()
+                            #self.goBackwards()
+                            #sleep(1.4)
+                            #self.stop()
+                            #sleep(self.PAUSE_DEL_TIME)
+                            #return "DELIVERY BACK"
+                        
                     elif self.isForward and (self.nextColor not in self.colorsInMap) and self.colorsInMap[self.currLocation] == "DUMMY":
+                        self.goForward()
+                        sleep(0.2)
                         self.goForward()
                         sleep(0.2)
                         self.stop()
                         self.colorsInMap[self.currLocation] = self.nextColor
                         self.log(f"colors in map update (dummy color replaced): {self.colorsInMap}")
                         #self.calibrateDirection() # TODO: verify if it works
+                        #self.calibrateDirection() # TODO: verify if it works
                         sleep(self.PAUSE_DEL_TIME)
                         return "DELIVERY"
                     self.log("no delivery")
                     if self.currLocation >= self.LAST_LOCATION:
                         self.currLocation = self.LAST_LOCATION
+                        #self.goForward()
+                        #sleep(self.TURN_LAST_TIME)
                         #self.goForward()
                         #sleep(self.TURN_LAST_TIME)
                         self.rotateBackwards()
@@ -175,11 +228,22 @@ class Navigation:
 #                     self.turnRight()
 #                     sleep(0.2)
                     
+#                 if(Left):
+#                     self.turnLeft()
+#                     sleep(0.2)
+#                 if(Right):
+#                     self.turnRight()
+#                     sleep(0.2)
+                    
                 self.resetTimer()
+                
+            
                 
             
             else:
                 self.goForward()
+#                 Right=False
+#                 Left=False
 #                 Right=False
 #                 Left=False
 
@@ -366,6 +430,7 @@ class Navigation:
         self.goForward(self.FORWARD_TRY_SPEED)
         #self.pollZoneColor(colors, tryTime)
         sleep(self.OFFSET_TRY_TIME + self.FORWARD_TRY_TIME)
+        sleep(self.OFFSET_TRY_TIME + self.FORWARD_TRY_TIME)
         self.stop()
         
         # Rotate in both directions
@@ -406,6 +471,7 @@ class Navigation:
         tryTime = time() + self.OFFSET_TRY_TIME
         self.goBackwards(self.FORWARD_TRY_SPEED)
         sleep(self.OFFSET_TRY_TIME)
+        sleep(self.OFFSET_TRY_TIME)
         self.stop()
         
         return mode(colors) if colors else "DUMMY"
@@ -431,6 +497,7 @@ class Navigation:
         prevColor = "GREEN"
         self.rotate(self.TURN_TRY_SPEED)
         sleep(0.2)
+        sleep(0.2)
         while "GREEN" in [prevColor, color]:
             prevColor = color
             color = self.colorDetector.getNavSensorColor()
@@ -447,12 +514,24 @@ class Navigation:
             self.log("all cubes have been delivered")
             self.nextColor = None
             self.rotateBackwards()
+            self.rotateBackwards()
         else:
             self.nextColor = self.colorsToDeliver.pop()
             self.log(f"next color: {self.nextColor}")
             if self.currLocation >= self.LAST_LOCATION:
                 self.currLocation = self.LAST_LOCATION
                 self.rotateBackwards()
+            elif not self.isFirstIteration:
+                if self.nextColor in self.colorsInMap:
+                    next=self.colorsInMap.index(self.nextColor)
+                    if next > self.currLocation:
+                        self.rotateForward()
+                        
+                    else:
+                        self.rotateBackwards()
+            self.goBackwards()
+            sleep(self.BACKWARDS_DET_TIME * 0.8)
+            self.stop()
             elif not self.isFirstIteration:
                 if self.nextColor in self.colorsInMap:
                     next=self.colorsInMap.index(self.nextColor)
@@ -492,6 +571,10 @@ class Navigation:
             #sleep(self.FORWARD_180_TIME)
             self.motorR.set_power(self.TURN_180_SPEED)
             self.motorL.set_power(-self.TURN_180_SPEED)
+            #self.goForward()
+            #sleep(self.FORWARD_180_TIME)
+            self.motorR.set_power(-self.TURN_180_SPEED)
+            self.motorL.set_power(self.TURN_180_SPEED)
             sleep(self.TURN_180_TIME)
             self.stop()
             self.isForward = True
@@ -523,6 +606,15 @@ class Navigation:
         
     def resetTurnBackTimer(self):
         self.turnBackTimer = time() + 2.5
+
+        self.timer = time() + 1.5 #1.3
+        self.resetFwdTimer()
+        
+    def resetFwdTimer(self):
+        self.fwdTimer = time() + 0.5
+        
+    def resetTurnBackTimer(self):
+        self.turnBackTimer = time() + 2.2
 
 
 if __name__ == '__main__':
