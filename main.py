@@ -26,19 +26,7 @@ if __name__ == "__main__":
     except BaseException as e:
         reset_brick()
         raise e
-        #exit()
-
-    """while(True):
-        deliv.loadingSequence()
-        deliv.isLoadingComplete()
-        
-        while(True):
-           instruction=nav.navSequence()
-           if(instruction=="Delivery"):
-               deliv.deliverySequence()
-           else:
-               break"""
-            
+        #exit()            
 
     """
     FIRST ITERATION:

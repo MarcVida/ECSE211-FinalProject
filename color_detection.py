@@ -77,5 +77,5 @@ class ColorDetector:
         colors = []
         for _ in range(5):
             colors.append(self.getColorName(self.navSensor.get_rgb()))
-            sleep(0.01)
+            sleep(0.005)
         return mode(colors)
