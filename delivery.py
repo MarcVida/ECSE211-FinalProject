@@ -2,22 +2,25 @@ from utils.brick import Motor, TouchSensor, reset_brick
 from utils.sound import Sound
 from time import sleep
 
-def waitUntil(callback):
-    while not callback():
-        pass
-
 class Delivery:
     """Class for the delivery subsystem."""
 
-    deliveryMotor: Motor = None
-    loadingTS: TouchSensor = None
-    SOUND1: Sound = None
-    SOUND2: Sound = None
-    MOVEMENT_DEG = 90 #80
-    MOVEMENT_TIME = 1 #1
-    MOVEMENT_LIMIT = 65 #65
+    ################# CONSTANTS #################
+    
+    MOVEMENT_DEG = 90
+    MOVEMENT_TIME = 1
+    MOVEMENT_LIMIT = 65
 
-    def __init__(self, deliveryPort: int, loadingPort: int, debug: bool = False) -> None:
+    ################# VARIABLES #################
+
+    deliveryMotor: Motor = None
+    touchSensor: TouchSensor = None
+    sound1: Sound = None
+    sound2: Sound = None
+
+    ################## METHODS ##################
+
+    def __init__(self, deliveryMotorPort: int, touchSensorPort: int, debug: bool = False) -> None:
         """Constructor for the Delivery class.
 
         Args:
@@ -25,24 +28,22 @@ class Delivery:
             loadingPort (int): The port for the loading touch sensor.
             debug (bool, optional): Sets whether the object is in debug mode. Defaults to False.
         """
-        self.deliveryMotor = Motor(deliveryPort)
-        self.loadingTS = TouchSensor(loadingPort)
-        self.SOUND1 = Sound(duration=0.5, pitch="G5", volume=80)
-        self.SOUND2 = Sound(duration=0.5, pitch="C6", volume=80)
+        self.deliveryMotor = Motor(deliveryMotorPort)
+        self.touchSensor = TouchSensor(touchSensorPort)
+        self.sound1 = Sound(duration=0.5, pitch="G5", volume=80)
+        self.sound2 = Sound(duration=0.5, pitch="C6", volume=80)
         self.debug = debug
 
     def loadingSequence(self):
         """Starts the loading sequence: Wait for the user to load the cubes.
         """
-        self.SOUND1.play()
+        self.sound1.play()
         self.log("Loading...")
-        waitUntil(self.isLoadingComplete)
-        self.SOUND2.play()
+        while not self.touchSensor.is_pressed():
+            pass
+        self.sound2.play()
         self.log("Loading complete.")
-        self.SOUND2.wait_done()
-
-    def isLoadingComplete(self):
-        return self.loadingTS.is_pressed()
+        self.sound2.wait_done()
 
     def deliverySequence(self):
         """Starts the delivery sequence: Drop a cube.

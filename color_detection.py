@@ -6,6 +6,8 @@ from time import sleep
 class ColorDetector:
     """Class for the color detection algorithm."""
 
+    ################# CONSTANTS #################
+
     COLORS = {
         "BLUE": [0.2309846, 0.4239539, 0.3450615],
         "GREEN": [0.1969103, 0.6920012, 0.1110885],
@@ -17,7 +19,11 @@ class ColorDetector:
     }
     COLOR_TRESHOLD = 0.3
 
+    ################# VARIABLES #################
+
     navSensor: EV3ColorSensor = None
+
+    ################## METHODS ##################
 
     def __init__(self, navigationPort: int) -> None:
         """Constructor for the ColorDetector class.
@@ -42,9 +48,6 @@ class ColorDetector:
         if not any(rgb): return None
 
         # normalize the values to be between 0 and 1
-
-        ### UNIT-VECTOR METHOD ###
-        # denominator = sqrt(r ** 2 + g ** 2 + b ** 2)
 
         ### RATIO METHOD ###
         denominator = sum(rgb)
